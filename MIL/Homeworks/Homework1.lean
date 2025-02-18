@@ -90,7 +90,6 @@ example (a b c : ℝ) : 3*(a^2+b^2+c^2) ≥ 2*(a*b+b*c+c*a) := by
   linarith
 
 theorem amgm (a b : ℝ) : a^2+b^2 ≥ 2*|a*b| := by
-  -- apply
   have h2 : Even 2 := ⟨1, rfl⟩
   calc
     a^2+b^2 = (a^2+b^2 - 2*|a*b|) + 2*|a*b| := by
@@ -98,7 +97,6 @@ theorem amgm (a b : ℝ) : a^2+b^2 ≥ 2*|a*b| := by
     _ = (|a|^2+|b|^2 - 2*|a*b|) + 2*|a*b| := by
       rw [Even.pow_abs h2]
       rw [Even.pow_abs h2]
-      -- rw [Even.pow_abs (even.intro 1 rfl), Even.pow_abs (even.intro 1 rfl)]
     _ = (|a|^2+|b|^2 - 2*|a| * |b|) + 2*|a*b| := by
       rw [mul_assoc, ← abs_mul]
     _ = (|a| - |b|)^2 + 2*|a*b| := by
@@ -111,16 +109,62 @@ theorem amgm (a b : ℝ) : a^2+b^2 ≥ 2*|a*b| := by
       apply zero_add
 
 
-example (x y: ℝ): x < |y| → x < y ∨ x < -y := by
-  rcases le_or_gt 0 y with h | h
-  · rw [abs_of_nonneg h]
-    intro h; left; exact h
-  · rw [abs_of_neg h]
-    intro h; right; exact h
---
+theorem amgm_r (a b : ℝ) : 2*|a*b| ≤ a^2+b^2 := by
+  linarith [amgm a b]
+
+theorem add_nonneg_right (a b :ℝ )(h: 0 ≤ b): a≤ a+b := by
+  nth_rw 1 [← add_zero a]
+  apply add_le_add_left h
+
+theorem sum_sq_nneg (a b c : ℝ) : 0 ≤ a^2+b^2+c^2 := by
+  calc
+    0 ≤ a^2 := by
+      apply pow_two_nonneg
+    _ ≤ a^2 + b^2 := by
+      apply add_nonneg_right
+      apply pow_two_nonneg
+    _ ≤ a^2 + b^2 +c^2 := by
+      apply add_nonneg_right
+      apply pow_two_nonneg
+
 --item (b)
 example (a b c : ℝ) : (a^2+b^2+c^2) ≥ 2*(|a*b|+|b*c|+|c*a|)/3 := by
-  sorry
+  calc
+    2*(|a*b|+|b*c|+|c*a|)/3 = (2*|a*b| +2*|b*c| +2*|c*a|)/3:= by
+      ring
+    _ = 2*|a*b|/3 +2*|b*c|/3+ 2*|c*a|/3 := by
+      ring
+    _ ≤ (a^2+b^2)/3 +2*|b*c|/3+ 2*|c*a|/3 := by
+      apply add_le_add_right
+      apply add_le_add_right
+      apply (div_le_div_right (by norm_num)).mpr
+      apply amgm_r
+    _ ≤ (a^2+b^2)/3+(b^2+c^2)/3+2*|c*a|/3 := by
+      apply add_le_add_right
+      apply add_le_add_left
+      apply (div_le_div_right (by norm_num)).mpr
+      apply amgm_r
+    _ ≤ (a^2+b^2)/3+(b^2+c^2)/3+(c^2+a^2)/3 := by
+      apply add_le_add_left
+      apply (div_le_div_right (by norm_num)).mpr
+      apply amgm_r
+    _ = (a^2+b^2+b^2+c^2+c^2+a^2)/3 := by
+      ring
+    _ = (2*a^2+2*b^2+2*c^2)/3:= by
+      ring
+    _ = (a^2+b^2+c^2)*2/3:= by
+      ring
+    _ ≤ (a^2+b^2+c^2) := by
+      nth_rw 2 [← mul_one (a^2+b^2+c^2)]
+      rw [mul_div_assoc]
+      refine mul_le_mul_of_nonneg_left ?h ?a0
+      rw [div_le_iff₀ (by norm_num), one_mul]
+      norm_num
+      apply sum_sq_nneg
+
+
+
+
 
 -- (3)
 example (m n r : ℤ) (h : m - 1∣ n) : m - 1 ∣ (n * r + m ^ 3 - 1) * r := by
