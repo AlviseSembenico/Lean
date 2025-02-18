@@ -15,6 +15,10 @@ Student number: 12380288
 
 import Mathlib
 import Mathlib.Data.Real.Basic
+import Mathlib.Algebra.Order.Ring.Abs
+-- import Mathlib.Data.Nat.Parity
+
+
 variable {R : Type*} [CommRing R]
 
 theorem double(x y : R) : (x+y)*(x+ -y) = x^2 - y^2 := by
@@ -45,9 +49,6 @@ example (x y a b : R) (h : a = x+y+b): (a-b)*(x-y)=x^2-y^2 := by
   rw [add_zero]
   rw [sub_eq_add_neg]
   apply double
-
-theorem sqrt_pow (x:ℝ)(h: x≥0): Real.sqrt x ^2 =x := by
-  apply?
 
 theorem doublep (b c :ℝ) : 4*b*c ≤ 2*b^2+2*c^2:= by
   have h: ((Real.sqrt 2) *b - (Real.sqrt 2) *c)^2 =2*b^2+2*c^2 -4*b*c:=by
@@ -88,8 +89,34 @@ example (a b c : ℝ) : 3*(a^2+b^2+c^2) ≥ 2*(a*b+b*c+c*a) := by
   rw [← h4]
   linarith
 
+theorem amgm (a b : ℝ) : a^2+b^2 ≥ 2*|a*b| := by
+  -- apply
+  have h2 : Even 2 := ⟨1, rfl⟩
+  calc
+    a^2+b^2 = (a^2+b^2 - 2*|a*b|) + 2*|a*b| := by
+      ring
+    _ = (|a|^2+|b|^2 - 2*|a*b|) + 2*|a*b| := by
+      rw [Even.pow_abs h2]
+      rw [Even.pow_abs h2]
+      -- rw [Even.pow_abs (even.intro 1 rfl), Even.pow_abs (even.intro 1 rfl)]
+    _ = (|a|^2+|b|^2 - 2*|a| * |b|) + 2*|a*b| := by
+      rw [mul_assoc, ← abs_mul]
+    _ = (|a| - |b|)^2 + 2*|a*b| := by
+      ring
+    _ ≥ 0 + 2*|a*b| := by
+      apply add_le_add
+      apply pow_two_nonneg
+      apply le_refl
+    _ =  2*|a*b| := by
+      apply zero_add
 
 
+example (x y: ℝ): x < |y| → x < y ∨ x < -y := by
+  rcases le_or_gt 0 y with h | h
+  · rw [abs_of_nonneg h]
+    intro h; left; exact h
+  · rw [abs_of_neg h]
+    intro h; right; exact h
 --
 --item (b)
 example (a b c : ℝ) : (a^2+b^2+c^2) ≥ 2*(|a*b|+|b*c|+|c*a|)/3 := by
