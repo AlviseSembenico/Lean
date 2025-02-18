@@ -14,6 +14,7 @@ Student number: 12380288
 -/
 
 import Mathlib
+import Mathlib.Data.Real.Basic
 variable {R : Type*} [CommRing R]
 
 theorem double(x y : R) : (x+y)*(x+ -y) = x^2 - y^2 := by
@@ -45,9 +46,18 @@ example (x y a b : R) (h : a = x+y+b): (a-b)*(x-y)=x^2-y^2 := by
   rw [sub_eq_add_neg]
   apply double
 
+theorem sqrt_pow (x:ℝ)(h: x≥0): Real.sqrt x ^2 =x := by
+  apply?
 
 theorem doublep (b c :ℝ) : 4*b*c ≤ 2*b^2+2*c^2:= by
-  sorry
+  have h: ((Real.sqrt 2) *b - (Real.sqrt 2) *c)^2 =2*b^2+2*c^2 -4*b*c:=by
+    ring_nf
+    apply Real.sq_sqrt 2
+    ring
+
+  apply sub_nonneg.mp
+  rw [← h]
+  apply pow_two_nonneg
 
 
 -- (2)
@@ -55,18 +65,9 @@ theorem doublep (b c :ℝ) : 4*b*c ≤ 2*b^2+2*c^2:= by
 -- hint : use (a-b+c)^2 ≥ 0, etc.
 example (a b c : ℝ) : 3*(a^2+b^2+c^2) ≥ 2*(a*b+b*c+c*a) := by
   have h1: (a-b-c)^2≥ 0 := sq_nonneg (a-b-c)
-  have h2 : (a - b - c)^2 = a^2 + b^2 + c^2 - 2*(a*b + a*c - b*c) := by
-    ring
-  have h3 : a^2 + b^2 + c^2 ≥ 2*(a*b + a*c - b*c) := by
-    apply le_of_sub_nonneg
-    rw [← h2]
-    apply h1
+
   have h4 : 2*(a*b + a*c - b*c) + 4*b*c = 2*(a*b + b*c + c*a) := by
     ring
-  have H : a^2 + b^2 + c^2 + 4*b*c ≥ 2*(a*b + a*c + b*c) :=by
-    linarith
-
-
   have h5:  (a^2 + b^2 + c^2) + 4*b*c ≤ (a^2 + b^2 + c^2) + (2*b^2+2*c^2) := by
     apply add_le_add_left
     apply doublep
