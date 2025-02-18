@@ -46,11 +46,50 @@ example (x y a b : R) (h : a = x+y+b): (a-b)*(x-y)=x^2-y^2 := by
   apply double
 
 
+theorem doublep (b c :ℝ) : 4*b*c ≤ 2*b^2+2*c^2:= by
+  sorry
+
+
 -- (2)
 -- item (a)
 -- hint : use (a-b+c)^2 ≥ 0, etc.
 example (a b c : ℝ) : 3*(a^2+b^2+c^2) ≥ 2*(a*b+b*c+c*a) := by
-  sorry
+  have h1: (a-b-c)^2≥ 0 := sq_nonneg (a-b-c)
+  have h2 : (a - b - c)^2 = a^2 + b^2 + c^2 - 2*(a*b + a*c - b*c) := by
+    ring
+  have h3 : a^2 + b^2 + c^2 ≥ 2*(a*b + a*c - b*c) := by
+    apply le_of_sub_nonneg
+    rw [← h2]
+    apply h1
+  have h4 : 2*(a*b + a*c - b*c) + 4*b*c = 2*(a*b + b*c + c*a) := by
+    ring
+  have H : a^2 + b^2 + c^2 + 4*b*c ≥ 2*(a*b + a*c + b*c) :=by
+    linarith
+
+
+  have h5:  (a^2 + b^2 + c^2) + 4*b*c ≤ (a^2 + b^2 + c^2) + (2*b^2+2*c^2) := by
+    apply add_le_add_left
+    apply doublep
+  have h7: 3*(a^2+b^2+c^2) =  (a^2 + b^2 + c^2) + (2*b^2+2*c^2+2*a^2) := by
+    ring
+  have h6: 3*(a^2+b^2+c^2) ≥ (a^2 + b^2 + c^2) + (2*b^2+2*c^2):= by
+    rw [h7]
+    apply add_le_add_left
+    rw [add_assoc (2*b^2)]
+    apply add_le_add_left
+    nth_rw 1 [← add_zero (2*c^2) ]
+    apply add_le_add_left
+    apply mul_nonneg_iff.mpr
+    left
+    norm_num
+    apply pow_two_nonneg
+
+  rw [← h4]
+  linarith
+
+
+
+  -- refine le_of_add_le_add_right (4*b*c) _
 --
 --item (b)
 example (a b c : ℝ) : (a^2+b^2+c^2) ≥ 2*(|a*b|+|b*c|+|c*a|)/3 := by
