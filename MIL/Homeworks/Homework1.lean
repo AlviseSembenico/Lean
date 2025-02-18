@@ -52,7 +52,7 @@ theorem sqrt_pow (x:ℝ)(h: x≥0): Real.sqrt x ^2 =x := by
 theorem doublep (b c :ℝ) : 4*b*c ≤ 2*b^2+2*c^2:= by
   have h: ((Real.sqrt 2) *b - (Real.sqrt 2) *c)^2 =2*b^2+2*c^2 -4*b*c:=by
     ring_nf
-    apply Real.sq_sqrt 2
+    rw [Real.sq_sqrt (by norm_num)]
     ring
 
   apply sub_nonneg.mp
@@ -90,7 +90,6 @@ example (a b c : ℝ) : 3*(a^2+b^2+c^2) ≥ 2*(a*b+b*c+c*a) := by
 
 
 
-  -- refine le_of_add_le_add_right (4*b*c) _
 --
 --item (b)
 example (a b c : ℝ) : (a^2+b^2+c^2) ≥ 2*(|a*b|+|b*c|+|c*a|)/3 := by
