@@ -164,8 +164,19 @@ example (a b c : ℝ) : (a^2+b^2+c^2) ≥ 2*(|a*b|+|b*c|+|c*a|)/3 := by
 
 
 
-
+#check dvd_add
+#check dvd_mul_of_dvd_right
+#check dvd_mul_right
+#check dvd_mul_left
 
 -- (3)
 example (m n r : ℤ) (h : m - 1∣ n) : m - 1 ∣ (n * r + m ^ 3 - 1) * r := by
-  sorry
+  have h1: (n * r + m ^ 3 - 1) * r = n*r^2 + (m-1)*(m^2+m+1)*r := by
+    ring
+  rw [h1]
+  apply dvd_add
+  · apply dvd_mul_of_dvd_left
+    apply h
+  · apply dvd_mul_of_dvd_left
+    apply dvd_mul_of_dvd_left
+    apply dvd_refl
