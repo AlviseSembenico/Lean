@@ -18,13 +18,6 @@ import Mathlib
 -- The next line is to ensure that variables are introduced explicitly; you can just ignore it.
 set_option autoImplicit false
 
-lemma q2 (q : ℤ ): 3 ∣ (q * 3 + 1) ^ 2 - (q * 3 + 1):= by
-  use q*(3*q+1)
-  ring
-
-lemma q3 (q : ℤ ): 3 ∣ (q * 3 + 2) ^ 2 + (q * 3 + 2):= by
-  use 3*q^2 + 5*q+2
-  ring
 -- (1)
 lemma three_dvd_sq_sub_or_sq_add (h : ∀ (a b : ℤ), b > 0 → ∃ q r, a = q * b + r ∧ 0 ≤ r ∧ r < b) :
     ∀ (m : ℤ) , 3 ∣ m ^ 2 - m ∨ 3 ∣ m ^ 2 + m := by
