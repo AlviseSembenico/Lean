@@ -137,6 +137,6 @@ example : 2*a*b ≤ a^2 + b^2 := by
 
 example : |a*b| ≤ (a^2 + b^2)/2 := by
   have h : (0 : ℝ) < 2 := by norm_num
-  apply abs_le'.
+  apply abs_le'.mpr
 
 #check abs_le'.mpr

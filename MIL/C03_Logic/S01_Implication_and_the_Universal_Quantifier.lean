@@ -56,7 +56,7 @@ def FnLb (f : ℝ → ℝ) (a : ℝ) : Prop :=
 section
 variable (f g : ℝ → ℝ) (a b : ℝ)
 
-example (hfa : FnUb f a) (hgb : FnUb g b) : FnUb (fun x ↦ f x + g x) (a + b) := by
+lemma fnUb_add (hfa : FnUb f a) (hgb : FnUb g b) : FnUb (fun x ↦ f x + g x) (a + b) := by
   intro x
   dsimp
   apply add_le_add
@@ -83,7 +83,7 @@ variable {α : Type*} {R : Type*} [OrderedCancelAddCommMonoid R]
 def FnUb' (f : α → R) (a : R) : Prop :=
   ∀ x, f x ≤ a
 
-theorem fnUb_add {f g : α → R} {a b : R} (hfa : FnUb' f a) (hgb : FnUb' g b) :
+theorem fnUb_add' {f g : α → R} {a b : R} (hfa : FnUb' f a) (hgb : FnUb' g b) :
     FnUb' (fun x ↦ f x + g x) (a + b) := fun x ↦ add_le_add (hfa x) (hgb x)
 
 end
@@ -126,7 +126,25 @@ example (of : FnOdd f) (og : FnOdd g) : FnEven fun x ↦ f x * g x := by
   sorry
 
 example (ef : FnEven f) (og : FnOdd g) : FnOdd fun x ↦ f x * g x := by
-  sorry
+  intro y
+  dsimp
+  -- unfold FnEven at ef
+  -- in this case it did not simplify anything
+  rw [ef, og]
+  ring
+
+
+example : ∃ x:ℝ,  2< x ∧ x<3 := by
+  use 2.5  -- to give a specific value
+  norm_num
+
+example : ∃ x:ℝ,  2 < x ∧ x < 3 :=
+  ⟨2.5, by norm_num ⟩
+
+example : (-6) ∣ 30:= by
+  use -5
+  ring
+
 
 example (ef : FnEven f) (og : FnOdd g) : FnEven fun x ↦ f (g x) := by
   sorry
@@ -178,3 +196,23 @@ example (injg : Injective g) (injf : Injective f) : Injective fun x ↦ g (f x) 
   sorry
 
 end
+
+
+
+
+def FnHasUb (f:ℝ → ℝ ) :=
+  ∃ a, FnUb f a
+
+variable (f: ℝ → ℝ )
+variable (g: ℝ → ℝ )
+
+#check fnUb_add
+
+example (ubf:FnHasUb f)(ubg: FnHasUb g) : FnHasUb fun x ↦ f x + g x := by
+  unfold FnHasUb at *
+  -- obtain {h, ha }:= ubf
+  rcases ubf with ⟨a, ha⟩
+  rcases ubg with ⟨b, hb⟩
+
+  use a+b
+  exact fnUb_add f g a b ha hb

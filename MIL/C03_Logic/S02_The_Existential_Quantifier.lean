@@ -57,6 +57,7 @@ example (lbf : FnHasLb f) (lbg : FnHasLb g) : FnHasLb fun x ↦ f x + g x := by
 example {c : ℝ} (ubf : FnHasUb f) (h : c ≥ 0) : FnHasUb fun x ↦ c * f x := by
   sorry
 
+
 example : FnHasUb f → FnHasUb g → FnHasUb fun x ↦ f x + g x := by
   rintro ⟨a, ubfa⟩ ⟨b, ubgb⟩
   exact ⟨a + b, fnUb_add ubfa ubgb⟩
@@ -140,7 +141,7 @@ open Function
 example {c : ℝ} : Surjective fun x ↦ x + c := by
   intro x
   use x - c
-  dsimp; ring
+  ring
 
 example {c : ℝ} (h : c ≠ 0) : Surjective fun x ↦ c * x := by
   sorry

@@ -5,8 +5,8 @@ import Mathlib.Data.Nat.Prime.Basic
 namespace C03S04
 
 example {x y : ℝ} (h₀ : x ≤ y) (h₁ : ¬y ≤ x) : x ≤ y ∧ x ≠ y := by
-  constructor
-  · assumption
+  constructor -- separates the goal into two goals
+  · assumption -- it checks if there is a hypotesis for in the context that matches. Would also work exact h₀
   intro h
   apply h₁
   rw [h]
@@ -20,10 +20,16 @@ example {x y : ℝ} (h₀ : x ≤ y) (h₁ : ¬y ≤ x) : x ≤ y ∧ x ≠ y :=
     rw [h₁]
   ⟨h₀, h⟩
 
+
+-- example {x y : ℝ} (h : x ≤ y ∧ x ≠ y) : ¬y ≤ x := by
+  -- rintro ⟨ h₀, h₁ ⟩
+
 example {x y : ℝ} (h : x ≤ y ∧ x ≠ y) : ¬y ≤ x := by
   rcases h with ⟨h₀, h₁⟩
-  contrapose! h₁
-  exact le_antisymm h₀ h₁
+  -- contrapose! h₁
+  -- exact le_antisymm h₀ h₁
+  intro h'
+  exact h₁ (le_antisymm h₀ h')
 
 example {x y : ℝ} : x ≤ y ∧ x ≠ y → ¬y ≤ x := by
   rintro ⟨h₀, h₁⟩ h'
@@ -90,7 +96,7 @@ example {x y : ℝ} : x ≤ y ∧ x ≠ y → x ≤ y ∧ ¬y ≤ x := by
   use h₀
   exact fun h' ↦ h₁ (le_antisymm h₀ h')
 
-example {x y : ℝ} (h : x ≤ y) : ¬y ≤ x ↔ x ≠ y := by
+lemma small_noneq {x y : ℝ} (h : x ≤ y) : ¬y ≤ x ↔ x ≠ y := by
   constructor
   · contrapose!
     rintro rfl
@@ -101,8 +107,25 @@ example {x y : ℝ} (h : x ≤ y) : ¬y ≤ x ↔ x ≠ y := by
 example {x y : ℝ} (h : x ≤ y) : ¬y ≤ x ↔ x ≠ y :=
   ⟨fun h₀ h₁ ↦ h₀ (by rw [h₁]), fun h₀ h₁ ↦ h₀ (le_antisymm h h₁)⟩
 
-example {x y : ℝ} : x ≤ y ∧ ¬y ≤ x ↔ x ≤ y ∧ x ≠ y :=
-  sorry
+lemma ne_le(x y : ℝ )(h:x ≤ y)(h2: ¬y≤x ): x ≠ y:= by
+  intro h1
+  push_neg at h2
+  linarith
+
+example {x y : ℝ} : x ≤ y ∧ ¬y ≤ x ↔ x ≤ y ∧ x ≠ y := by
+  -- rintro ⟨h₀ , h₁⟩
+  constructor
+  · rintro ⟨h₀ , h₁⟩
+    constructor
+    · apply h₀
+    apply ne_le _ _ h₀ h₁
+
+  rintro ⟨h₀ , h₁⟩
+  constructor
+  · apply h₀
+  push_neg
+  exact lt_of_le_of_ne h₀ h₁
+
 
 theorem aux {x y : ℝ} (h : x ^ 2 + y ^ 2 = 0) : x = 0 :=
   have h' : x ^ 2 = 0 := by sorry

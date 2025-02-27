@@ -25,6 +25,20 @@ def FnHasLb (f : ℝ → ℝ) :=
 
 variable (f : ℝ → ℝ)
 
+
+-- negation is an implication, that is
+-- ¬ f can be rewritten as f → False
+-- goal p → q 
+-- intro h means h:p , then i want to prove q
+
+example (h : ∀ a, ∃ x, f x > a) : ¬FnHasUb f := by
+  intro fnub
+  rcases fnub with ⟨a, fnuba⟩
+  specialize h a -- use a in h 
+  rcases h with ⟨x, hx⟩
+  have : f x ≤ a := fnuba x
+  linarith
+
 example (h : ∀ a, ∃ x, f x > a) : ¬FnHasUb f := by
   intro fnub
   rcases fnub with ⟨a, fnuba⟩
@@ -75,12 +89,13 @@ example (h : ¬∀ x, P x) : ∃ x, ¬P x := by
 
 example (h : ∃ x, ¬P x) : ¬∀ x, P x := by
   sorry
-
+ 
+-- by_contra add the negation of the goal and changes the goal to false
 example (h : ¬∀ x, P x) : ∃ x, ¬P x := by
   by_contra h'
   apply h
   intro x
-  show P x
+  -- show P x
   by_contra h''
   exact h' ⟨x, h''⟩
 
