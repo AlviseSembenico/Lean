@@ -56,7 +56,14 @@ def functionOfGraph (S : Set (X × Y)) (hS : IsGraph S) : X → Y :=
 
 -- (a)
 lemma graph_isGraph (f : X → Y) : IsGraph (graph f) := by
-  sorry
+  dsimp [IsGraph, graph]
+  intro x
+  use f x
+  constructor
+  · rfl
+  intro y fh
+  exact fh
+
 
 -- (b)
 lemma graph_injective : Function.Injective (graph (X := X) (Y := Y)) := by
