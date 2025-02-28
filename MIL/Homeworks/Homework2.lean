@@ -67,7 +67,16 @@ lemma graph_isGraph (f : X → Y) : IsGraph (graph f) := by
 
 -- (b)
 lemma graph_injective : Function.Injective (graph (X := X) (Y := Y)) := by
-  sorry
+  dsimp [Function.Injective]
+  intro x y
+  dsimp [graph]
+  have h₁ (a : X): (a, x a) ∈ {p | p.2 = x p.1} := by simp
+  intro h
+  rw [h] at h₁
+  simp at h₁
+  funext a
+  apply h₁
+
 
 -- (c)
 lemma functionOfGraph_spec (S : Set (X × Y)) (hS : IsGraph S) (x : X) (y : Y) :
