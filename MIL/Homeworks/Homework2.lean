@@ -81,7 +81,29 @@ lemma graph_injective : Function.Injective (graph (X := X) (Y := Y)) := by
 -- (c)
 lemma functionOfGraph_spec (S : Set (X × Y)) (hS : IsGraph S) (x : X) (y : Y) :
     (x, y) ∈ S ↔ y = functionOfGraph S hS x := by
-  sorry
+
+    have h2: S = graph (functionOfGraph S hS):= by
+      simp [graph]
+      ext ⟨x, y⟩
+      constructor
+      · intro h
+        exact (hS x).choose_spec.2 y h
+
+      intro h
+      dsimp [graph]
+      dsimp [functionOfGraph] at h
+      rw [h]
+      exact (hS x).choose_spec.1
+
+    constructor
+    · intro h
+      rw [h2] at h
+      apply h
+
+    intro h
+    rw [h2]
+    apply h
+
 
 -- (d)
 lemma functionOfGraph_graph (f : X → Y) : functionOfGraph (graph f) (graph_isGraph f) = f := by
