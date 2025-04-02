@@ -30,8 +30,12 @@ lemma descent (a b c k : ℕ) (h : a * b = c ^ k) : a.Coprime b → ∃ x y, a =
   · intro h1
     rw [zero_pow_eq] at h
     split_ifs at h with hk
-    · sorry
-    -- sorry
+    · use 0
+      use 0
+      rw [zero_pow_eq]
+      rw [hk, if_pos (by decide)]
+      apply mul_eq_one.mp h
+
     rcases eq_zero_or_eq_zero_of_mul_eq_zero h with (ha | hb)
     · use 0
       use 1
