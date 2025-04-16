@@ -109,6 +109,8 @@ lemma functionOfGraph_spec (S : Set (X × Y)) (hS : IsGraph S) (x : X) (y : Y) :
 lemma functionOfGraph_graph (f : X → Y) : functionOfGraph (graph f) (graph_isGraph f) = f := by
   simp [graph]
   ext x
+  #check (graph_isGraph f x).choose_spec.1
+  dsimp [functionOfGraph]
   exact (graph_isGraph f x).choose_spec.1
 
 

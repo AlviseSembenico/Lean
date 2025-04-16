@@ -22,11 +22,59 @@ set_option autoImplicit false
 
 /-
 ## Exercise 1.
+
+
+
 Please fill out the sorry's below with Lean proofs.
 -/
 -- (a)
+
+theorem factorization_pow' (n k p : ℕ) :
+    (n ^ k).factorization p = k * n.factorization p := by
+  rw [Nat.factorization_pow]
+  rfl
+
+lemma descent2 (a b c k : ℕ) (h : a * b = c ^ k) (h2: c ≠ 0) : a.Coprime b → ∃ x y, a = x ^ k ∧ b = y ^ k := by
+  intro h3
+  let p := a.primeFactorsList
+  have fac_c : (c.primeFactorsList).prod = c := by
+    exact Nat.prod_primeFactorsList h2
+  -- split cases a,b = 0
+  by_cases h_nonzero : (a ≠ 0 ∧ b ≠ 0)
+  · sorry
+  push_neg at h_nonzero
+  by_cases ha : a = 0
+  · have hb : b = 1 := by
+      rw [ha] at h3
+      rw [Nat.coprime_zero_left] at h3
+      exact h3
+    rw [ha, hb] at h
+    exfalso
+    by_cases hk : k = 0
+    · rw [hk, pow_zero] at h
+      simp at h
+    sorry
+      -- exact Nat.one_ne_zero h
+    -- · rw [zero_pow (Nat.pos_of_ne_zero hk)] at h
+      -- exact Nat.zero_ne (c ^ k) h
+    -- use 0
+    -- use 1
+
+  have hb : b = 0 := h_nonzero ha
+  have ha' : a = 1 := by
+    rw [hb] at h3
+    rw [Nat.coprime_zero_right] at h3
+    assumption
+
+  sorry
+
+
+
+
+
+
 lemma descent (a b c k : ℕ) (h : a * b = c ^ k) : a.Coprime b → ∃ x y, a = x ^ k ∧ b = y ^ k := by
-  cases c
+  rcases c with (rfl | n)
   · intro h1
     rw [zero_pow_eq] at h
     split_ifs at h with hk
@@ -58,8 +106,10 @@ lemma descent (a b c k : ℕ) (h : a * b = c ^ k) : a.Coprime b → ∃ x y, a =
     symm
     rw [hb]
     apply zero_pow_eq_zero.mpr hk
-  sorry
   -- now the case for c != 0
+  let c := n + 1
+  have hc : c ≠ 0 := Nat.succ_ne_zero n
+  exact descent2 a b c k h hc
 
 
   -- hint: distinguish between the cases c = 0 and c ≠ 0 (and consider the prime factorization in the latter case).
@@ -99,22 +149,24 @@ Note that we can only set up the notation `x ~~ y` after the definition is compl
 So the two fields `rel_symm` and `rel_irrefl` must be expressed in terms of `rel` directly.
 
 Uncomment the code below, and complete it.
--/
 
--- class SimpleGraph (G : Type*) where
---  rel : /- replace this with the type of `rel` -/
---  /- add fields here -/
 
-/-
+
+
 We set up notation for `Graph.rel`. From now on we can write `x ~~ y` for the graph relation.
 
 Uncomment the code below to enable the notation.
 -/
--- notation3 x " ~~ " y => SimpleGraph.rel x y
 --
 -- -- A quick check to see the notation in action.
--- variable (G : Type*) [SimpleGraph G] (x y : G) in
--- #check x ~~ y
+class SimpleGraph (G : Type*) where
+ rel : G → G → Prop
+ rel_sym : ∀ x y : G, rel x y → rel y x
+ rel_irrefl : ∀ x: G, rel x x → false
+
+notation3 x " ~~ " y => SimpleGraph.rel x y
+variable (G : Type*) [SimpleGraph G] (x y : G) in
+#check x ~~ y
 
 /-
 # Discrete and complete graphs
@@ -127,19 +179,15 @@ The *complete* graph on `X` is the graph where all vertices are related to all v
 def DiscreteGraph (X : Type*) := X
 def CompleteGraph (X : Type*) := X
 
-/-
-## Exercise 3.
-Define the appropriate instances on `DiscreteGraph X` and `CompleteGraph X`.
+-- ## Exercise 3.
 
-Uncomment the code below, and complete it.
--/
+instance (X : Type*) : SimpleGraph (DiscreteGraph X) where
+  rel := sorry
+  /- add more proofs here -/
 
--- instance (X : Type*) : SimpleGraph (DiscreteGraph X) where
---   rel := /- replace this with the relation -/
---   /- add more proofs here -/
+instance (X : Type*) : SimpleGraph (CompleteGraph X) where
+  /- complete this -/
 
--- instance (X : Type*) : SimpleGraph (CompleteGraph X) where
---   /- complete this -/
 
 /-
 ## Exercise 4.
