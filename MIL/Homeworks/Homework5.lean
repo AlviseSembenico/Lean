@@ -70,7 +70,6 @@ instance [IsCommutative α] [IsCommutative β]: IsCommutative (α × β) where
     · apply dia_comm
     apply dia_comm
 
-
 end Prod
 
 
@@ -86,23 +85,58 @@ inductive OddP : Nat → Prop
 | step : ∀ {n}, OddP n → OddP (n + 2)
 
 -- (a)
--- Defne a "Bool valued" function for expressing oddness of a natural number in a similar recursive manner,
--- i.e, uncomment and finish the definition:
-
-/-
 def OddB : Nat → Bool
-| 0  => sorry -- replace the sorry with the relevant value and add more lines/cases
--/
+| 0  => false
+| Nat.succ n => ¬ OddB n
+
+#eval OddB 4
+#eval OddB 5
 
 -- (b)
--- Reflect between OddB and OddP,
--- i.e. uncomment and complete the proof:
-
-/-
 theorem Odd_reflect : ∀ n, OddB n = true ↔ OddP n
 | 0 => by
-    sorry -- replace the sorry with a proof and add more lines/cases
--/
+  constructor
+  · intro h
+    contradiction
+  intro h
+  contradiction
+| Nat.succ n => by
+  constructor
+  · intro h
+    cases n with
+    | zero =>
+        exact OddP.one
+    | succ n' =>
+      have ih := Odd_reflect n'
+      apply OddP.step
+      apply ih.mp
+      rw [OddB] at h
+      simp at h
+      rw [OddB] at h
+      simp at h
+      exact h
+  · intro h
+    cases n with
+    | zero =>
+      rw [OddB]
+      simp
+      rfl
+    | succ n' =>
+      cases h with
+      | step p =>
+        have ih := Odd_reflect n'
+        rw [OddB]
+        simp
+        have hh :OddB n' = true := by
+          apply ih.mpr
+          assumption
+        rw [OddB]
+        simp
+        assumption
+
+
+
+
 
 -- (c)
 -- Now put a decidable instance on OddP and show that the following "calculation" (after uncommenting) works:
