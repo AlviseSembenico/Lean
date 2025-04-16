@@ -135,15 +135,18 @@ theorem Odd_reflect : ∀ n, OddB n = true ↔ OddP n
         assumption
 
 
-
-
-
+#check isTrue
 -- (c)
 -- Now put a decidable instance on OddP and show that the following "calculation" (after uncommenting) works:
+instance (n : ℕ): Decidable (OddP n) :=
+  if h: OddB n = true then
+    isTrue ((Odd_reflect n).mp h)
+  else
+    isFalse (mt (Odd_reflect n).mpr h)
 
-/-
+set_option maxRecDepth 2000 -- otherwise I get recursion limit
 example : OddP 101 := by decide
--/
+
 end MyInductiveOdd
 
 
